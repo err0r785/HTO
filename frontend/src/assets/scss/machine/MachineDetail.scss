@@ -1,0 +1,62 @@
+.machine-detail-container {
+    .machine-detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .machine-name {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .machine-rating {
+            display: flex;
+            align-items: center;
+
+            .rating-text {
+                margin-left: 1rem;
+                font-size: 1rem;
+            }
+        }
+    }
+
+    hr {
+        margin: 1rem 0;
+        border: none;
+        border-top: 1px solid #ccc;
+    }
+
+    .machine-detail-content {
+        display: flex;
+        justify-content: space-between;
+
+        .left-section {
+            flex: 1;
+            margin-right: 2rem;
+
+            p {
+                margin-bottom: 1rem;
+                line-height: 1.5;
+            }
+
+            strong {
+                display: block;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        .right-section {
+            flex: 1;
+
+            p {
+                margin-bottom: 1rem;
+                line-height: 1.5;
+            }
+
+            strong {
+                display: block;
+                margin-bottom: 0.5rem;
+            }
+        }
+    }
+}

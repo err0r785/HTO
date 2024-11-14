@@ -1,0 +1,25 @@
+.toAdmin-container {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .toAdmin-form {
+        display: flex;
+        align-items: center;
+        gap: 10px;  /* 요소 간 간격 조정 */
+
+        input {
+            height: 40px;
+            padding: 0 10px;
+            border-radius: 12px;
+        }
+
+        .toAdmin-button {
+            height: 40px;
+            padding: 0 15px;
+            border-radius: 12px;
+        }
+    }
+}
+

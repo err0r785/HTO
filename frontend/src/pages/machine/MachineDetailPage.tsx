@@ -94,13 +94,13 @@ const MachineDetailPage: React.FC = () => {
             Play
           </button>
         </div>
+        <div className='machine-detail-page-review'>
+          <MachineReviewList machineId={machineId || ''} />
+        </div>
         <div className='machine-detail-page-new-review'>
           <button onClick={handleRegisterReview} className='machine-detail-page-new-review-button'>
             Add New Review
           </button>
-        </div>
-        <div className='machine-detail-page-review'>
-          <MachineReviewList machineId={machineId || ''} />
         </div>
       </div>
     </Main>

@@ -5,17 +5,14 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 24px 16px;
   box-sizing: border-box;
-  transition: width 1s ease; // 접힐 때 부드러운 애니메이션
-  font-size: var(--body-regular-regular-16-size);
-  color: var(--colors-neutral-grey-900);
-  font-family: var(--body-regular-regular-16);
+  transition: width 0.2s ease;
+  font-size: var(--font-roboto-size);
+  color: var(--color-gainsboro);
+  font-family: var(--font-roboto);
 
   .headerParent {
-    flex: 1;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -23,18 +20,18 @@
     .header {
       align-self: stretch;
       border-bottom: 1px dashed #aaa7af;
-      width: 100%;
-      height: 80px;
+      height: 85px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: var(--padding-5xl) 0;
+      margin-left: 15px;
+      margin-right: 5px;
+      padding-bottom: 9px;
       box-sizing: border-box;
 
       .logoimage {
-        width: 100%;
+        width: 300px;
         height: 100%;
-        padding: 10px 10px 5px;
 
         .logoContainerIcon {
           width: 100%;
@@ -47,18 +44,21 @@
       .sidebarMenuButton {
         width: 40px;
         height: 40px;
-        border-radius: 4px;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 4px;
+        background: none;
+        border: none;
+        padding: 0;
 
-        .menuIcon {
-          width: 24px;
-          height: 24px;
-          position: relative;
-          background-color: #13151a;
+        .collapse_button {
+          width: 40px;
+          height: 40px;
+          background: none;
+          color: #D1D1D1;
+          object-fit: contain;
 
+          cursor: pointer;
         }
       }
     }
@@ -71,7 +71,7 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
-    padding: 20px 0;
+    padding: 20px 16px;
 
     .verticalMenuList {
       align-self: stretch;
@@ -87,6 +87,10 @@
         justify-content: center;
         padding: 4px 16px;
         box-sizing: border-box;
+
+        &:hover {
+          background-color: #3F4147;
+        }
 
         .menuIcon {
           width: 24px;
@@ -107,9 +111,9 @@
   }
 
   &.collapsed {
-    width: var(--sidebar-width-collpased); // 접힘 상태에서의 너비 조정
+    width: var(--sidebar-collpased); // 접힘 상태에서의 너비 조정
     align-items: center;
-    
+
     .header {
       justify-content: center; // 중앙 정렬로 변경
 
@@ -131,5 +135,20 @@
         }
       }
     }
+  }
+}
+
+.selected {
+  background-color: #D1D1D1;
+  /* 선택된 항목의 배경 색상 */
+  border-radius: 5px;
+  pointer-events: none;
+
+  .label {
+    color: #393939;
+  }
+
+  .menuIcon {
+    color: #000000;
   }
 }

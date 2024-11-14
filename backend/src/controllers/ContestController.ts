@@ -109,11 +109,22 @@ export const deactivateContest = async (req: Request, res: Response): Promise<vo
  */
 export const getActiveContests = async (req: Request, res: Response): Promise<void> => {
     try {
-        const contests = await Contest.find({ isActive: true });
+        const contests = await Contest.find({ isActive: true }).sort({ startTime: -1 }).select('-__v -createdAt -updatedAt -description');
+        if (contests.length === 0) {
+            res.status(404).json({ 
+                message: "ERROR", 
+                msg: 'No active contests found.' 
+            });
+            return;
+        }
+        const currentTime = new Date();
+        const activeContests = contests.filter(
+            (contest) => currentTime >= contest.startTime && currentTime <= contest.endTime
+        );
         res.status(200).json({ 
             message: "OK", 
             msg: 'Active contests fetched successfully.', 
-            contests: contests 
+            contests: activeContests 
         });
     } catch (error: any) {
         console.error('Error fetching active contests:', error);
@@ -146,11 +157,23 @@ export const getContestStatus = async (req: Request, res: Response): Promise<voi
     try {
         const { contestId } = req.params;
         const contest = await Contest.findById(contestId);
+        if (!contest) {
+            res.status(404).json({ 
+                message: "ERROR", 
+                msg: 'Contest not found.' 
+            });
+            return;
+        }
+        const currentTime = new Date();
+        const isStarted: boolean = currentTime >= contest.startTime;
+        const isEnded: boolean = currentTime >= contest.endTime;
         res.status(200).json({ 
             message: "OK", 
             msg: 'Contest status fetched successfully.', 
             contestName: contest?.name, 
             isActive: contest?.isActive, 
+            isStarted: isStarted,
+            isEnded: isEnded,
             startTime: contest?.startTime, 
             endTime: contest?.endTime 
         });
@@ -317,7 +340,6 @@ export const submitFlagForContest = async (req: Request, res: Response): Promise
         }
 
         // Verify the flag
-
         const isMatch = await bcrypt.compare(flag, machine.flag);
         if (!isMatch) {
             res.status(400).json({ 
@@ -327,18 +349,28 @@ export const submitFlagForContest = async (req: Request, res: Response): Promise
             return;
         }
 
-        // Calculate EXP based on time taken and hints used
+        // Calculate Expenses based on time taken and hints used
         const timeTaken = (currentTime.getTime() - participation.participationStartTime.getTime()) / 1000; // in seconds
-        const hintsUsed = participation.hintsUsed;
+        const timeSinceContestStart = (currentTime.getTime() - contest.startTime.getTime()) / 1000; // in seconds
+        const contestDuration = (contest.endTime.getTime() - contest.startTime.getTime()) / 1000; // in seconds
 
-        // EXP calculation
-        // EXP calculation with better scaling
+        // Ensure timeSinceContestStart does not exceed contestDuration
+        const effectiveTimeSinceStart = Math.min(timeSinceContestStart, contestDuration);
+
+        // EXP calculation with combined time penalties
         let expEarned = contest.contestExp;
-        const timePercentage = timeTaken / (contest.endTime.getTime() - contest.startTime.getTime());
-        const timeMultiplier = Math.max(0.3, 1 - timePercentage); // Minimum 30% of base EXP
-        expEarned = Math.floor(expEarned * timeMultiplier);
-        expEarned -= hintsUsed * 20; // 20 EXP penalty per hint
-        expEarned = Math.max(Math.floor(contest.contestExp * 0.1), expEarned); // minimum 10% of base EXP
+
+        // Calculate the percentage of time taken relative to contest duration
+        const timeTakenPercentage = timeTaken / contestDuration;
+        // Calculate the percentage of time elapsed since contest start relative to contest duration
+        const timeSinceStartPercentage = effectiveTimeSinceStart / contestDuration;
+
+        // Calculate a combined multiplier based on both time taken and time since start
+        const combinedMultiplier = Math.max(0.1, 1 - timeTakenPercentage - timeSinceStartPercentage);
+
+        expEarned = Math.floor(contest.contestExp * combinedMultiplier);
+        expEarned -= participation.hintsUsed * 20; // 20 EXP penalty per hint
+        expEarned = Math.max(Math.floor(contest.contestExp * 0.05), expEarned); // minimum 5% of base EXP
 
         if (expEarned < 1) expEarned = 1; // Minimum 1 EXP
 
@@ -361,7 +393,6 @@ export const submitFlagForContest = async (req: Request, res: Response): Promise
             });
             return;
         }
-
 
         res.status(200).json({ 
             message: "OK", 
@@ -789,7 +820,7 @@ export const getLeaderboardByContest = async (req: Request, res: Response) => {
         const participations = await ContestParticipation.find({ contest: contestId })
             .populate({
                 path: 'user',
-                select: 'username',
+                select: 'username level avatar',
                 model: User  // Explicitly specify the User model
             })
             .sort({ expEarned: -1 });
@@ -797,7 +828,9 @@ export const getLeaderboardByContest = async (req: Request, res: Response) => {
         // Map participations to include username and expEarned
         const leaderboard = participations.map(participation => ({
             username: participation.user ? (participation.user as any).username : 'Unknown User',
-            expEarned: participation.expEarned || 0
+            level: participation.user ? (participation.user as any).level : 0,
+            avatar: participation.user ? (participation.user as any).avatar : null,
+            exp: participation.expEarned || 0
         }));
 
         return res.status(200).json({ 
@@ -815,3 +848,52 @@ export const getLeaderboardByContest = async (req: Request, res: Response) => {
     }
 };
 
+export const getMyRankInContest = async (req: Request, res: Response) => {
+    try {
+        const { contestId } = req.params;
+        const userId = res.locals.jwtData.id;
+        const user = await User.findById(userId).select('level username avatar');
+        if (!userId || !user) {
+            res.status(400).json({
+                message: "ERROR",
+                msg: 'User not found.'
+            });
+            return;
+        }
+
+        const participation = await ContestParticipation.findOne({
+            user: userId,
+            contest: contestId,
+        });
+        if (!participation) {
+            res.status(200).json({
+                message: "OK",
+                msg: 'You are not participating in this contest.',
+                myRank: null,
+                user: user
+            });
+            return;
+        }
+
+        const higherExpCount = await ContestParticipation.countDocuments({
+            contest: contestId,
+            expEarned: { $gt: participation.expEarned }
+        });
+        const myRank = higherExpCount + 1;
+        
+        return res.status(200).json({
+            message: "OK",
+            msg: 'My rank fetched successfully.',
+            myRank: myRank,
+            user: user,
+            expEarned: participation.expEarned
+        }); 
+    } catch (error: any) {
+        console.error('Error getting my rank in contest:', error);
+        res.status(500).json({
+            message: "ERROR",
+            msg: 'Failed to get my rank in contest.',
+            error: error.message
+        });
+    }
+}

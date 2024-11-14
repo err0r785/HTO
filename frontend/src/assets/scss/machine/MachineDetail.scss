@@ -1,61 +1,100 @@
-.machine-detail-container {
-    .machine-detail-header {
+.machine-detail {
+
+
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: var(--white200);
+    }
+
+    .machine-info {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 30px;
 
-        .machine-name {
-            font-size: 2rem;
-            font-weight: bold;
-        }
-
-        .machine-rating {
+        .info-item {
             display: flex;
-            align-items: center;
+            flex-direction: column;
 
-            .rating-text {
-                margin-left: 1rem;
+            label {
+                font-weight: bold;
+                margin-bottom: 5px;
+                color: var(--text-primary);
+            }
+
+            span {
+                color: var(--text-secondary);
                 font-size: 1rem;
             }
         }
     }
 
-    hr {
-        margin: 1rem 0;
-        border: none;
-        border-top: 1px solid #ccc;
-    }
+    .machine-description {
+        margin-bottom: 30px;
 
-    .machine-detail-content {
-        display: flex;
-        justify-content: space-between;
-
-        .left-section {
-            flex: 1;
-            margin-right: 2rem;
-
-            p {
-                margin-bottom: 1rem;
-                line-height: 1.5;
-            }
-
-            strong {
-                display: block;
-                margin-bottom: 0.5rem;
-            }
+        h2 {
+            margin-bottom: 10px;
+            color: var(--white200);
         }
 
-        .right-section {
-            flex: 1;
+        p {
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+    }
 
-            p {
-                margin-bottom: 1rem;
-                line-height: 1.5;
+    .machine-actions {
+        display: flex;
+        gap: 10px;
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--white);
+            font-size: 1rem;
+            transition: background-color 0.3s;
+
+            &.edit-button {
+                background-color: var(--primary);
+
+                &:hover {
+                    background-color: var(--primary-hover);
+                }
             }
 
-            strong {
-                display: block;
-                margin-bottom: 0.5rem;
+            &.delete-button {
+                background-color: var(--danger);
+
+                &:hover {
+                    background-color: var(--danger-hover);
+                }
+            }
+
+            &.view-button {
+                background-color: var(--secondary);
+
+                &:hover {
+                    background-color: var(--secondary-hover);
+                }
+            }
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+        .machine-info {
+            flex-direction: column;
+        }
+
+        .machine-actions {
+            flex-direction: column;
+            width: 100%;
+
+            button {
+                width: 100%;
             }
         }
     }

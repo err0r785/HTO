@@ -51,13 +51,13 @@
         top: 110px;
         border-radius: 60px;
         background-color: black;
+        cursor: pointer;
+        .arrow-svg {
+            position: relative;
+            top: 2px;
+        }
     }
 
-    .arrow-svg {
-        position: absolute;
-        left: 90px;
-        top: 113.42px;
-    }
 }
 
 

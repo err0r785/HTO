@@ -6,6 +6,7 @@ interface User {
   username: string;
   email: string;
   isAdmin: boolean;
+  avatar: string;
   // Add other user properties as needed
 }
 

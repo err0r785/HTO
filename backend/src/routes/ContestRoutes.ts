@@ -19,7 +19,8 @@ import {
     getActiveContestDetails,
     getInactiveContestDetails,
     giveUpContest,
-    getUsedHintsInContest
+    getUsedHintsInContest,
+    getMyRankInContest
 } from '../controllers/ContestController.js';
 import { verifyAdmin } from '../middlewares/Admin.js';
 import { createContestValidation, updateContestValidation, handleValidation } from '../middlewares/validateContest.js';
@@ -65,6 +66,9 @@ ContestRoutes.get('/:contestId/:machineId/used-hints', verifyToken, getUsedHints
 // Route to get leaderboard by contest
 ContestRoutes.get('/:contestId/leaderboard', verifyToken, getLeaderboardByContest);
 
+// Route to get my rank in contest
+ContestRoutes.get('/:contestId/my-rank', verifyToken, getMyRankInContest);
+
 // Route to give up a contest
 ContestRoutes.post('/:contestId/give-up', verifyToken, giveUpContest);
 
@@ -79,7 +83,7 @@ ContestRoutes.get('/',
 // Route to get contest details(Admin only)
 ContestRoutes.get('/:contestId',
     verifyToken,
-    verifyAdmin,
+    //verifyAdmin,
     getContestDetails
 );
 
@@ -131,7 +135,7 @@ ContestRoutes.post('/:contestId/deactive',
 // Route to get contest status(Admin only)
 ContestRoutes.get('/:contestId/status',
     verifyToken,
-    verifyAdmin,
+    //verifyAdmin,
     getContestStatus
 );
 

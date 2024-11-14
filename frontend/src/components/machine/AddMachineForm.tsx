@@ -114,10 +114,14 @@ const AddMachineForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className='add-machine-form'>
+      <div className='back-button'>
+        <button type='button' onClick={() => navigate(-1)}>back</button>
+      </div>
       <h2>Add New Machine</h2>
 
       {error && <p className='error-message'>{error}</p>}
       <div className='create-container'>
+
 
         <div className='name-container'>
           <label htmlFor='name'>Machine name<span style={{ color: 'red' }}>*</span> :

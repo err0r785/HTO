@@ -21,9 +21,14 @@ const MachineDetail: React.FC<MachineDetailProps> = ({ machineDetail }) => {
 
   return (
     <div className="machine-detail-container">
-      <div className="machine-detail-header">
-        <h3 className="machine-name">{name}</h3>
+      <div className="machine-detail">
+        <h3>Machine Details</h3>
+        <p className="machine-name"><strong>Name:</strong>{name}</p>
+        <p><strong>Description: </strong>{description || 'N/A'}</p>
+        <p><strong>Experience Points (EXP):</strong>{exp || 0}</p>
+        <p><strong>Category:</strong> {category || 'N/A'}</p>
         <div className="machine-rating">
+          <p className="rating-text">Rating: </p>
           <StarRatings
             rating={rating}
             starRatedColor="orange"
@@ -32,19 +37,6 @@ const MachineDetail: React.FC<MachineDetailProps> = ({ machineDetail }) => {
             starDimension="20px"
             starSpacing="3px"
           />
-          <p className="rating-text">Rating: {rating.toFixed(1) || 'N/A'}</p>
-        </div>
-      </div>
-      <hr />
-      <div className="machine-detail-content">
-        <div className="left-section">
-          <p><strong>About name</strong></p>
-          <p>{description || 'N/A'}</p>
-        </div>
-        <div className="right-section">
-          <p><strong>Category:</strong> {category || 'N/A'}</p>
-          <p><strong>Experience Points (EXP):</strong> {exp || 0}</p>
-          <p><strong>AMI ID:</strong> {amiId || 'N/A'}</p>
         </div>
       </div>
     </div>
